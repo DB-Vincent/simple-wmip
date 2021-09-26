@@ -24,7 +24,12 @@ async function logger(ctx, next) {
 async function respond(ctx, next) {
   await next();
   if ('/' != ctx.url) return;
-  ctx.body = ctx.request.ip;
+
+  if (process.env.REVERSE_PROXY == "true" || process.env.REVERSE_PROXY == "True") {
+      ctx.body = ctx.header['x-forwarded-for'];
+  } else {
+      ctx.body = ctx.request.ip;
+  }
 }
 
 // composed middleware
