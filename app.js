@@ -22,16 +22,21 @@ async function logger(ctx, next) {
 
 // response
 async function respond(ctx, next) {
-    await next();
-    if ('/' != ctx.url) return;
+  await next();
+  if ('/' != ctx.url) return;
 
-    if (process.env.REVERSE_PROXY == "true" || process.env.REVERSE_PROXY == "True") {
-        ctx.body = ctx.header['x-forwarded-for'];
-    } else {
-      ctx.body = "\
+  ipAddress = "";
+
+  if (process.env.REVERSE_PROXY == "true" || process.env.REVERSE_PROXY == "True") {
+      ipAddress = ctx.header['x-forwarded-for'];
+  } else {
+    ipAddress = ctx.request.ip
+  }
+
+  ctx.body = "\
                                        _____________________\n\
                                       |                     |\n\
-                                      |" + centerText(ctx.request.ip) + "|\n\
+                                      |" + centerText(ipAddress) + "|\n\
                                       |___  ________________|   \n\
                                           \\/\n\
 \n\
@@ -41,8 +46,6 @@ async function respond(ctx, next) {
     `-------..__            ` ,/\n\
                 `-._ -  -  - |\n\
                     `-------'"
-    //   ctx.body = ctx.request.ip;
-  }
 }
 
 function centerText(text) {
