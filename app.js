@@ -22,14 +22,60 @@ async function logger(ctx, next) {
 
 // response
 async function respond(ctx, next) {
-  await next();
-  if ('/' != ctx.url) return;
+    await next();
+    if ('/' != ctx.url) return;
 
-  if (process.env.REVERSE_PROXY == "true" || process.env.REVERSE_PROXY == "True") {
-      ctx.body = ctx.header['x-forwarded-for'];
-  } else {
-      ctx.body = ctx.request.ip;
+    if (process.env.REVERSE_PROXY == "true" || process.env.REVERSE_PROXY == "True") {
+        ctx.body = ctx.header['x-forwarded-for'];
+    } else {
+      ctx.body = "\
+                                       _____________________\n\
+                                      |                     |\n\
+                                      |" + centerText(ctx.request.ip) + "|\n\
+                                      |___  ________________|   \n\
+                                          \\/\n\
+\n\
+ ___________________        ____....-----....____\n\
+(________________LL_)   ==============================\n\
+    ______\   \_______.--'.  `---..._____...---'\n\
+    `-------..__            ` ,/\n\
+                `-._ -  -  - |\n\
+                    `-------'"
+    //   ctx.body = ctx.request.ip;
   }
+}
+
+function centerText(text) {
+  textLength = text.length;
+  outputText = "";
+
+  if ((textLength % 2) === 0) {
+    spacing = (21 - textLength) / 2
+
+    for (i = 0; i < Math.floor(spacing); i++) {
+      outputText += " ";
+    }
+
+    outputText += text;
+
+    for (i = 0; i < Math.ceil(spacing); i++) {
+      outputText += " ";
+    }
+  } else {
+    spacing = (21 - textLength) / 2
+
+    for (i = 0; i < spacing; i++) {
+      outputText += " ";
+    }
+
+    outputText += text;
+
+    for (i = 0; i < spacing; i++) {
+      outputText += " ";
+    }
+  }
+
+  return outputText
 }
 
 // composed middleware
